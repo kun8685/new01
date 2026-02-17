@@ -69,3 +69,23 @@ const PORT = process.env.PORT || 5000;
 
 // Use server.listen instead of app.listen
 server.listen(PORT, console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`));
+
+// Keep-Alive Logic for Render (Free Tier)
+// Pings the server every 14 minutes to prevent it from sleeping (idling after 15 mins)
+if (process.env.NODE_ENV === 'production') {
+    const keepAlive = () => {
+        const url = process.env.RENDER_EXTERNAL_URL; // Render sets this automatically
+        if (url) {
+            const https = require('https');
+            https.get(url, (res) => {
+                // Optional: Log to verify it's working
+                // console.log(`Keep-Alive: Pinged ${url} - Status: ${res.statusCode}`);
+            }).on('error', (err) => {
+                console.error(`Keep-Alive: Ping failed - ${err.message}`);
+            });
+        }
+    };
+
+    // Run every 14 minutes (15 mins is the limit)
+    setInterval(keepAlive, 14 * 60 * 1000);
+}

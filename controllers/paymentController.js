@@ -34,10 +34,19 @@ const createRazorpayOrder = asyncHandler(async (req, res) => {
         throw new Error('Order is already paid');
     }
 
+    let amountToPay = order.totalPrice;
+
+    // Check payment method to determine amount
+    // If NOT 'Razorpay' or 'Online' (assuming COD), only charge shipping
+    // 'Online' is the new trustworthy name for Razorpay
+    if (order.paymentMethod !== 'Razorpay' && order.paymentMethod !== 'Online') {
+        amountToPay = order.shippingPrice;
+    }
+
     const options = {
-        amount: Math.round(order.totalPrice * 100), // Amount in paise
+        amount: Math.round(amountToPay * 100), // Amount in paise
         currency: 'INR',
-        receipt: order._id.toString(),
+        receipt: receipt,
     };
 
     try {

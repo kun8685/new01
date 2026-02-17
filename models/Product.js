@@ -52,13 +52,17 @@ const productSchema = mongoose.Schema({
         default: 0,
     },
     // Variant support
+    // Variant support
     variants: [
         {
             size: String, // e.g., 'S', 'M', 'L' or weight '250g', '500g'
             stock: Number,
             priceOverride: Number,
         }
-    ]
+    ],
+    // Flexible attributes for easy display
+    sizes: [{ type: String }],  // e.g. ["S", "M", "L", "XL"] or ["6", "7", "8", "9"]
+    colors: [{ type: String }], // e.g. ["Red", "Blue", "Black"]
 }, {
     timestamps: true,
 });

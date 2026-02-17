@@ -5,15 +5,31 @@ const Product = require('../models/Product');
 // @route   GET /api/products
 // @access  Public
 const getProducts = asyncHandler(async (req, res) => {
-    const pageSize = 10;
+    const pageSize = Number(req.query.pageSize) || 10;
     const page = Number(req.query.pageNumber) || 1;
 
     const keyword = req.query.keyword
         ? {
-            name: {
-                $regex: req.query.keyword,
-                $options: 'i',
-            },
+            $or: [
+                {
+                    name: {
+                        $regex: req.query.keyword,
+                        $options: 'i',
+                    },
+                },
+                {
+                    category: {
+                        $regex: req.query.keyword,
+                        $options: 'i',
+                    },
+                },
+                {
+                    brand: {
+                        $regex: req.query.keyword,
+                        $options: 'i',
+                    },
+                },
+            ],
         }
         : {};
 
@@ -73,6 +89,8 @@ const updateProduct = asyncHandler(async (req, res) => {
         category,
         countInStock,
         shippingPrice,
+        sizes,
+        colors,
     } = req.body;
 
     const product = await Product.findById(req.params.id);
@@ -86,6 +104,8 @@ const updateProduct = asyncHandler(async (req, res) => {
         product.category = category;
         product.countInStock = countInStock;
         product.shippingPrice = shippingPrice !== undefined ? shippingPrice : 0;
+        product.sizes = sizes;
+        product.colors = colors;
 
         const updatedProduct = await product.save();
         res.json(updatedProduct);

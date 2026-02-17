@@ -66,6 +66,10 @@ const orderSchema = mongoose.Schema({
         required: true,
         default: false,
     },
+    manualStatus: {
+        type: String, // 'Processing', 'Packed', 'Shipped', 'Delivered'
+        required: false,
+    },
     deliveredAt: {
         type: Date,
     },
